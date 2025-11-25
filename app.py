@@ -2,18 +2,30 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
+import io
 from analisys import LinearModel, QuadraticModel, ExponentialModel
 
+st.set_page_config(page_title='Auto-Fitter for Lab', layout='wide')
 st.title('Auto-Fitter for Lab')
 st.write('実験データをアップロードすると、最適なモデルを自動選定します。')
+st.markdown('データの入力方法を選んでください。')
 
-uploaded_file = st.file_uploader('CSVファイルをドラッグ&ドロップ', type='csv')
-
-if uploaded_file is not None:
+tab1, tab2 = st.tabs(['CSVファイルをアップロード','直接入力'])
+df = None
+with tab1:
+    uploaded_file = st.file_uploader('CSVファイルをドラッグ&ドロップ', type='csv')
     df = pd.read_csv(uploaded_file)
+with tab2:
+    st.info('以下の表にデータを直接入力してください。行の追加も可能です。')
+    default_data = pd.DataFrame({
+        "x": [1, 2, 3, 4, 5], "y": [2.1, 4.2, 6.1, 8.5, 9.8]
+    })
+    df = st.data_editor(default_data, num_rows='dynamic')
+
+if df is not None:
     st.write('データのプレビュー')
     st.dataframe(df.head())
+    #ここまでやった。
 
     columns = df.columns.tolist()
     col1, col2 = st.columns(2)

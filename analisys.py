@@ -4,6 +4,7 @@ from scipy.optimize import curve_fit
 class BaseModel:
     def __init__(self):
         self.params = None
+        self.errors = None
         self.k = 0
         self.x_data = None
         self.y_data = None
@@ -11,7 +12,9 @@ class BaseModel:
     def fit(self, x, y):
         self.x_data = np.array(x)
         self.y_data = np.array(y)
-        self.params, _ = curve_fit(self.func, self.x_data, self.y_data)
+        popt, pcov = curve_fit(self.func, self.x_data, self.y_data)
+        self.params = popt
+        self.errors = np.sqrt(np.diag(pcov))
 
     def get_aic(self):
         y_pred = self.func(self.x_data, *self.params)
@@ -33,7 +36,8 @@ class LinearModel(BaseModel):
     
     def get_equation(self):
         a, b = self.params
-        return f'y = {a: 3f}x + {b: 3f}'
+        ea, eb = self.errors
+        return f'y = ({a: 3f} \pm {ea:.3f})x + ({b: 3f} \pm {eb:.3f})'
 
 class QuadraticModel(BaseModel):
     def __init__(self):
@@ -45,7 +49,7 @@ class QuadraticModel(BaseModel):
     
     def get_equation(self):
         a, b, c = self.params
-        return f'y = {a: 3f}x^2 + {b: 3f}x + {c: 3f}'
+        return f'y = {a:.3f}x^2 + {b:.3f}x + {c:.3f}'
     
 class ExponentialModel(BaseModel):
     def __init__(self):
