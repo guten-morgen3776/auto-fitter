@@ -11,7 +11,7 @@ class BaseModel:
     def fit(self, x, y):
         self.x_data = np.array(x)
         self.y_data = np.array(y)
-        self.params, _ = curve_fit(self.func, self.x_data)
+        self.params, _ = curve_fit(self.func, self.x_data, self.y_data)
 
     def get_aic(self):
         y_pred = self.func(self.x_data, *self.params)
