@@ -27,3 +27,20 @@ class LinearModel(BaseModel):
     
     def func(self, x, a, b):
         return a * x + b
+
+class QuadraticModel(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.k = 3
+    
+    def func(self, x, a, b, c):
+        return a * x ** 2 + b * x + c
+    
+class ExponentialModel(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.k = 3
+    
+    def func(self, x, a, b, c):
+        return a * np.exp(b * x) + c
+    
