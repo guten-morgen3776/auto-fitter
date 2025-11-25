@@ -14,27 +14,34 @@ tab1, tab2 = st.tabs(['CSVファイルをアップロード','直接入力'])
 df = None
 with tab1:
     uploaded_file = st.file_uploader('CSVファイルをドラッグ&ドロップ', type='csv')
-    df = pd.read_csv(uploaded_file)
+    if uploaded_file is not None:
+        df = pd.read_csv(uploaded_file)
+        
 with tab2:
     st.info('以下の表にデータを直接入力してください。行の追加も可能です。')
     default_data = pd.DataFrame({
-        "x": [1, 2, 3, 4, 5], "y": [2.1, 4.2, 6.1, 8.5, 9.8]
+        "x": [0.0], "y": [0.0]
     })
-    df = st.data_editor(default_data, num_rows='dynamic')
+    edited_df = st.data_editor(default_data, num_rows='dynamic')
+    if not edited_df.empty and df is None:
+        df = edited_df
 
 if df is not None:
     st.write('データのプレビュー')
     st.dataframe(df.head())
-    #ここまでやった。
+    st.divider()
 
-    columns = df.columns.tolist()
-    col1, col2 = st.columns(2)
-    with col1:
-        x_col = st.selectbox('X軸のデータを選んでください', columns)
-    with col2:
-        y_col = st.selectbox('Y軸のデータを選んでください', columns)
+    cols = df.columns.tolist()
+    c1, c2, c3 = st.columns([1, 1, 2])
+    with c1:
+        x_col = st.selectbox('X軸のデータを選んでください', cols, index=0)
+    with c2:
+        y_col = st.selectbox('Y軸のデータを選んでください', cols, index=1 if len(cols)>1 else 0)
+    with c3:
+        st.write('')
+        run_btn = st.button('解析開始', type='primary')
     
-    if st.button('解析開始'):
+    if run_btn:
         x_data = df[x_col]
         y_data = df[y_col]
 
@@ -46,7 +53,7 @@ if df is not None:
         x_range = np.linspace(min(x_data), max(x_data), 100)
 
         best_aic = np.inf
-        best_model_name = ''
+        best_model = None
 
         for model in models:
             model.fit(x_data, y_data)
@@ -57,23 +64,19 @@ if df is not None:
                 'Equation': model.get_equation(),        
                 'Params': np.round(model.params, 3)
             })
-
-            y_pred_plot = model.func(x_range, *model.params)
-            ax.plot(x_range, y_pred_plot, label=model.__class__.__name__)
-
             if aic < best_aic:
                 best_aic = aic
-                best_model_name = model.__class__.__name__
+                best_model = model
 
-        ax.legend()
-        ax.set_xlabel(x_col)
-        ax.set_ylabel(y_col)
-        ax.set_title(f'best fit: {best_model_name}')
-        st.pyplot(fig)
+        if best_model is not None:
+            x_range = np.linspace(min(x_data), max(x_data), 200)
+            y_pred_plot = best_model.func(x_range, *best_model.params)
+            ax.plot(x_range, y_pred_plot, label=f"Best: {best_model.__class__.__name__}")
 
         st.header('モデル評価結果')
         df_results = pd.DataFrame(results).sort_values(by="AIC")
         st.dataframe(df_results)
+        st.info('AICが低いモデルほどデータの当てはまりとシンプルさのバランスが良いと判断されます。')
 
 
 
