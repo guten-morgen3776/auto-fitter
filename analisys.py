@@ -4,6 +4,7 @@ from scipy.optimize import curve_fit
 class BaseModel:
     def __init__(self):
         self.params = None
+        self.cov = None
         self.errors = None
         self.k = 0
         self.x_data = None
@@ -15,7 +16,18 @@ class BaseModel:
         popt, pcov = curve_fit(self.func, self.x_data, self.y_data, maxfev=5000)
         self.params = popt
         self.errors = np.sqrt(np.diag(pcov))
-
+        self.cov = pcov
+    
+    def get_confidence_interval(self, x_domain, n_samples=1000, alpha=0.05):
+        sampled_params = np.random.multivariate_normal(self.params, self.cov, n_samples)
+        sampled_y = []
+        for p in sampled_params:
+            sampled_y.append(self.func(x_domain, *p))
+        sampled_y = np.array(sampled_y)
+        lower_bound = np.percentile(sampled_y, 100 * (alpha / 2), axis=0)
+        upper_bound = np.percentile(sampled_y, 100 * (1 - alpha / 2), axis=0)
+        return lower_bound, upper_bound
+    
     def get_aic(self):
         y_pred = self.func(self.x_data, *self.params)
         rss = np.sum((self.y_data - y_pred) ** 2)
@@ -53,7 +65,8 @@ class QuadraticModel(BaseModel):
     
     def get_equation(self):
         a, b, c = self.params
-        return f'y = {a:.3f}x^2 + {b:.3f}x + {c:.3f}'
+        ea, eb, ec = self.errors
+        return f'y = ({a:.3f} ± {ea:.3f})x^2 + ({b:.3f} ± {eb:.3f})x + ({c:.3f} ± {ec:.3f})'
     
 class ExponentialModel(BaseModel):
     def __init__(self):
@@ -65,4 +78,5 @@ class ExponentialModel(BaseModel):
     
     def get_equation(self):
         a, b, c = self.params
-        return f"y = {a:.3f}e^{{{b:.3f}x}} + {c:.3f}"
+        ea, eb, ec = self.errors
+        return f"y = ({a:.3f} ± {ea:.3f})e^{{({b:.3f} ± {eb:.3f})x}} + ({c:.3f} ± {ec:.3f})"

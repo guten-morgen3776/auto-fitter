@@ -39,6 +39,7 @@ if df is not None:
         y_col = st.selectbox('Y軸のデータを選んでください', cols, index=1 if len(cols)>1 else 0)
     with c3:
         st.write('')
+        st.write('')
         run_btn = st.button('解析開始', type='primary')
     
     if run_btn:
@@ -71,7 +72,12 @@ if df is not None:
         if best_model is not None:
             x_range = np.linspace(min(x_data), max(x_data), 200)
             y_pred_plot = best_model.func(x_range, *best_model.params)
-            ax.plot(x_range, y_pred_plot, label=f"Best: {best_model.__class__.__name__}")
+            lower, upper = best_model.get_confidence_interval(x_range)
+            ax.fill_between(x_range, lower, upper, color='red', alpha=0.2, label='95% Confidence Interval')
+            ax.plot(x_range, y_pred_plot, label=f"Best: {best_model.__class__.__name__}",color='red')
+            ax.legend()
+            ax.set_title(f"Best Fit: {best_model.__class__.__name__}")
+            st.pyplot(fig)
 
         st.header('モデル評価結果')
         df_results = pd.DataFrame(results).sort_values(by="AIC")
