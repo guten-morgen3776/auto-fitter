@@ -1,0 +1,9 @@
+# Streamlitの秘密鍵
+.streamlit/secrets.toml
+
+# Macの不要なファイル
+.DS_Store
+
+# Pythonが勝手に作るキャッシュファイル
+__pycache__/
+*.pyc
