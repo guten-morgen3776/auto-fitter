@@ -28,7 +28,7 @@ class BaseModel:
         upper_bound = np.percentile(sampled_y, 100 * (1 - alpha / 2), axis=0)
         return lower_bound, upper_bound
     
-    def get_aic(self):
+    def get_aicc(self):
         y_pred = self.func(self.x_data, *self.params)
         rss = np.sum((self.y_data - y_pred) ** 2)
         n = len(self.y_data)

@@ -12,7 +12,10 @@ if 'GEMINI_API_KEY' in st.secrets:
 else:
     st.error('APIキーが設定されていません。')
 
-st.set_page_config(page_title='Auto-Fitter for Lab', layout='wide')
+st.set_page_config(
+    page_title='Auto-Fitter for Lab', 
+    layout='wide'
+)
 st.title('Auto-Fitter for Lab')
 st.write('データをアップロードすると、最適なモデルを自動選定します。')
 st.markdown('データの入力方法を選んでください。')
@@ -94,24 +97,24 @@ if df is not None:
         ax.scatter(x_data, y_data, label='raw data', color='black')
         x_range = np.linspace(min(x_data), max(x_data), 100)
 
-        best_aic = np.inf
+        best_aicc = np.inf
         best_model = None
 
         for model in models:
             model.fit(x_data, y_data)
-            aic = model.get_aic()
+            aicc = model.get_aicc()
             results.append({
                 'Model': model.__class__.__name__,
-                'AIC': round(aic, 2),
+                'AICc': round(aicc, 2),
                 'Equation': model.get_equation(),        
                 'Params': np.round(model.params, 3)
             })
-            if aic < best_aic:
-                best_aic = aic
+            if aicc < best_aicc:
+                best_aicc = aicc
                 best_model = model
 
         if best_model is not None:
-            st.session_state['analysis_result'] = pd.DataFrame(results).sort_values(by='AIC')
+            st.session_state['analysis_result'] = pd.DataFrame(results).sort_values(by='AICc')
             st.session_state['best_model'] = best_model
             st.session_state['x_data'] = x_data
             st.session_state['y_data'] = y_data
@@ -147,7 +150,7 @@ if df is not None:
         with col_res2:
             st.subheader('Model Ranking')
             st.dataframe(df_results)
-            st.info('AICが低いモデルほどデータの当てはまりとシンプルさのバランスが良いと判断されます。')
+            st.info('AICcが低いモデルほどデータの当てはまりとシンプルさのバランスが良いと判断されます。')
 
 
 
