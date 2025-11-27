@@ -3,7 +3,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import io
-from analisys import LinearModel, QuadraticModel, ExponentialModel, LogarithmicModel, SigmoidModel, MichaelisMentenModel
+from analisys import (
+    LinearModel, QuadraticModel, ExponentialModel, 
+    LogarithmicModel, SigmoidModel, MichaelisMentenModel
+)
 import google.generativeai as genai
 import os
 
