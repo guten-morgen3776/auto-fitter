@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import io
-from analisys import LinearModel, QuadraticModel, ExponentialModel
+from analisys import LinearModel, QuadraticModel, ExponentialModel, LogarithmicModel, SigmoidModel, MichaelisMentenModel
 import google.generativeai as genai
 import os
 
@@ -90,7 +90,14 @@ if df is not None:
         x_data = df[x_col]
         y_data = df[y_col]
 
-        models = [LinearModel(), QuadraticModel(), ExponentialModel()]
+        models = [
+            LinearModel(), 
+            QuadraticModel(), 
+            ExponentialModel(),
+            LogarithmicModel(),
+            SigmoidModel(),
+            MichaelisMentenModel()
+        ]
         results = []
 
         fig, ax = plt.subplots()

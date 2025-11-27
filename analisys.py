@@ -80,3 +80,43 @@ class ExponentialModel(BaseModel):
         a, b, c = self.params
         ea, eb, ec = self.errors
         return f"y = ({a:.3f} ± {ea:.3f})e^{{({b:.3f} ± {eb:.3f})x}} + ({c:.3f} ± {ec:.3f})"
+    
+class LogarithmicModel(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.k = 2
+    
+    def func(self, x, a, b):
+        return a * np.log(x) + b
+    
+    def get_equation(self):
+        if self.params is None: return 'Fitting Failed'
+        a, b = self.params
+        ea, eb = self.errors
+        return f'y = ({a:.3f} ± {ea:.3f})ln(x) + ({b:.3f} ± {eb:.3f})'
+    
+class SigmoidModel(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.k = 3
+    
+    def func(self, x, a, b, c):
+        return a / (1 + np.exp(-b * (x - c)))
+    
+    def get_equation(self):
+        a, b, c = self.params
+        return f'y = {a:.3f} / (1 + e^({-b:.3f}(x - {c:.3f})))'
+
+class MichaelisMentenModel(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.k = 2 # a: Vmax, b: Km
+
+    def func(self, x, a, b):
+        return (a * x) / (b + x)
+
+    def get_equation(self):
+        a, b = self.params
+        ea, eb = self.errors
+        # a=Vmax, b=Km
+        return f"y = ({a:.3f} ± {ea:.3f})x / (({b:.3f} ± {eb:.3f}) + x)"
