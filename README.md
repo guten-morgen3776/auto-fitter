@@ -28,7 +28,7 @@ AICcを用いて過学習を防ぎつつ最適なモデルを自動ランク付�
 - DataScience: scipy.optimize(非線形最小二乗法）,numpy, pandas, matplotlib
 - AI: google gemini API
 ## ローカルでの実行方法
-git clone
-pip install -r requirement.txt
+git clone https://github.com/guten-morgen3776/auto-fitter/blob/main/README.md </br> 
+pip install -r requirement.txt </br>
 streamlit -m run app.py
 
