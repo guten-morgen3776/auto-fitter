@@ -23,5 +23,12 @@ AICcを用いて過学習を防ぎつつ最適なモデルを自動ランク付�
 - AIによる考察生成</br>
 解析結果とユーザーが入力したデータの背景情報を組み合わせ、gemini APIを呼び出し考察案を生成。
 ## 使用技術
-
+- Laguage: python
+- Framework: stremalit
+- DataScience: scipy.optimize(非線形最小二乗法）,numpy, pandas, matplotlib
+- AI: google gemini API
+## ローカルでの実行方法
+git clone
+pip install -r requirement.txt
+streamlit -m run app.py
 
